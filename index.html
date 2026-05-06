@@ -268,6 +268,25 @@
     </div>
   </section>
 
+
+  <section id="asistente" class="container-premium px-4 sm:px-6 pb-16">
+    <div class="panel p-6 sm:p-8 reveal">
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-full bg-[rgba(212,175,55,.15)] flex items-center justify-center"><i data-lucide="chef-hat" class="w-6 h-6 gold-text"></i></div>
+        <div class="flex-1">
+          <h2 class="font-display text-3xl sm:text-4xl mb-2">El Chef IA Recomienda</h2>
+          <p class="text-gray-300 mb-5">¿No se decide? Cuénteme cómo se siente hoy y le recomendaré el plato ideal de nuestra cocina.</p>
+          <div class="grid gap-3">
+            <label for="ai-input" class="text-sm text-gray-400">Escriba su antojo o cómo se siente:</label>
+            <textarea id="ai-input" class="w-full rounded-xl bg-black/40 border border-white/15 p-4 min-h-[110px]" placeholder="Ejemplo: Hoy quiero algo contundente y tradicional."></textarea>
+            <button id="ai-btn" class="btn-main px-5 py-3 rounded-lg w-fit text-sm">Consultar al Chef</button>
+            <div id="ai-result" class="hidden rounded-xl border border-[rgba(212,175,55,.22)] bg-black/35 p-4 text-gray-100" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="py-10 text-center px-4 border-t border-white/10">
     <img src="logo-dona-remedios.png" alt="Logo de Restaurant Doña Remedios" width="84" height="84" loading="lazy" decoding="async" class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full object-cover opacity-90"/>
     <p class="font-display text-xl mb-2">Restaurant Doña Remedios</p>
@@ -275,13 +294,36 @@
     <p class="text-xs text-gray-500 mt-4">© 2026 Doña Remedios. Todos los derechos reservados.</p>
   </footer>
 
-  <a href="https://wa.me/59174855203?text=Hola%20quiero%20hacer%20un%20pedido" class="md:hidden fixed bottom-3 inset-x-3 z-[70] btn-main text-center py-4 rounded-xl text-sm tracking-[.08em] shadow-2xl" aria-label="Pedido rápido por WhatsApp">
-    Pedido rápido por WhatsApp
+  <a href="https://wa.me/59174855203?text=Hola%20quiero%20hacer%20un%20pedido" class="fixed bottom-5 right-5 z-[70] btn-main px-5 py-3 rounded-full text-sm tracking-[.06em] shadow-2xl" aria-label="Pedido rápido por WhatsApp">
+    WhatsApp
   </a>
 
+  <button id="assistant-fab" class="fixed bottom-5 left-5 z-[70] border border-[rgba(212,175,55,.4)] bg-black text-white px-5 py-3 rounded-full text-sm shadow-2xl" aria-label="Abrir asistente del chef">
+    Asistente Chef
+  </button>
+
   <script>
+    function recomendarPlato(texto) {
+      const t = (texto || "").toLowerCase();
+      if (!t.trim()) return "Cuénteme su antojo y con gusto le recomendaré una opción de la casa.";
+      if (t.includes("fin de semana") || t.includes("domingo") || t.includes("sábado") || t.includes("sabado")) {
+        return "Para fin de semana le recomiendo Lechón al horno (Bs 60): piel crocante, carne tierna y gran sabor para compartir.";
+      }
+      if (t.includes("ráp") || t.includes("rap") || t.includes("liger") || t.includes("suave")) {
+        return "Le sugiero Fricasé Paceño (Bs 40): tradicional, reconfortante y perfecto cuando quiere algo sabroso sin esperar mucho.";
+      }
+      if (t.includes("hambre") || t.includes("contund") || t.includes("fuerte") || t.includes("antoj")) {
+        return "Si busca una experiencia completa, pida nuestro Fricasé Mixto (Bs 50), el plato insignia de Doña Remedios.";
+      }
+      if (t.includes("cruj") || t.includes("cerdo") || t.includes("chicharr")) {
+        return "Le va a encantar el Chicharrón (Bs 40): crocante por fuera, jugoso por dentro y con mote tierno.";
+      }
+      return "Mi recomendación principal es el Fricasé Mixto (Bs 50), el favorito de nuestros clientes por sabor, tradición y textura.";
+    }
+
     window.addEventListener("load", () => {
       lucide.createIcons();
+
       const items = document.querySelectorAll(".reveal");
       const io = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -292,6 +334,27 @@
         });
       }, { threshold: 0.12 });
       items.forEach((item) => io.observe(item));
+
+      const input = document.getElementById("ai-input");
+      const btn = document.getElementById("ai-btn");
+      const result = document.getElementById("ai-result");
+      const fab = document.getElementById("assistant-fab");
+
+      const responder = () => {
+        const respuesta = recomendarPlato(input.value);
+        result.textContent = respuesta;
+        result.classList.remove("hidden");
+      };
+
+      btn?.addEventListener("click", responder);
+      input?.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") responder();
+      });
+
+      fab?.addEventListener("click", () => {
+        document.getElementById("asistente")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        input?.focus();
+      });
     });
   </script>
 </body>
